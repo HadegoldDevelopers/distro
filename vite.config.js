@@ -1,31 +1,21 @@
-import defaultTheme from 'tailwindcss/defaultTheme';
-import forms from '@tailwindcss/forms';
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
 
-export default {
-darkMode: 'class',
-  content: [
-    './resources/views/**/*.blade.php',
-    './resources/js/**/*.js',
+export default defineConfig({
+  plugins: [
+    laravel({
+      input: [
+        'resources/css/app.css',
+        'resources/js/app.js',
+      ],
+      refresh: true,
+    }),
   ],
-  theme: {
-    extend: {
-      colors: {
-        // 🎨 Your custom colors
-        primary: '#ff0',     // orange
-        secondary: '#374151',   // dark gray
-        accent: '#4ADE80',      // green
-        background: '#F9FAFB',  // light background
-        surface: '#FFFFFF',
-        muted: '#9CA3AF',
-        'text-main': '#1F2937',
-        'text-light': '#6B7280',
-      },
-
-      fontFamily: {
-        sans: ['Inter', ...defaultTheme.fontFamily.sans],
-      },
+  build: {
+    manifest: true,
+    outDir: 'public/build',
+    rollupOptions: {
+      input: 'resources/js/app.js',
     },
   },
-
-  plugins: [forms],
-};
+});

@@ -82,11 +82,12 @@
 
     $titles = [
         'user.dashboard' => 'Dashboard Overview',
-        'profile.show' => 'Profile Settings',
+        'profile.edit' => 'Profile Settings',
         'user.settings' => 'User Settings',
-        'release' => 'My Releases',
+        'user.releases' => 'My Releases',
+        'artists.index' => 'Artist Releases',
         'music.upload' => 'Upload Music',
-        'user.payment' => 'Payment Settings',
+        'payment.index' => 'Payment Settings',
     ];
 
     $pageTitle = $titles[$route] ?? 'Dashboard';

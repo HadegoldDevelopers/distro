@@ -1,6 +1,6 @@
 <!-- Logo -->
   <a href="#" class="flex items-center text-orange-500 text-2xl font-bold rounded-lg p-2 mb-8">
-    <i class="fas fa-music mr-2"></i>YourDistro
+    <img src="{{ asset('storage/' .'logo/distro-goldd.png') }}" alt="Distro Gold logo featuring stylized gold text on a dark background, conveying a modern and energetic atmosphere" class="w-10 h-10 mr-2">
   </a>
 
   <nav class="flex-1">
