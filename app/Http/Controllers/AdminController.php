@@ -5,7 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Artist;
 use App\Models\Music;
+use App\Models\Ticket;
+use App\Models\Stat;
+
 
 class AdminController extends Controller
 {
@@ -34,39 +38,115 @@ class AdminController extends Controller
         return redirect()->route('admin.login');
     }
 
+    
+
     public function dashboard()
     {
-        $users = User::count();
-        $songs = Music::count();
-        return view('admin.dashboard', compact('users', 'songs'));
+        $totalUsers = User::count();
+        $newSignups = User::where('created_at', '>=', now()->subDays(30))->count();
+        $totalReleases = Music::count();
+        $pendingApprovals = Music::where('status', 'pending')->count();
+        $totalRevenue = Stat::sum('earnings');
+        $openTickets = Ticket::where('status', 'open')->count();
+
+        // Album uploads by date for the last 30 days
+        $recentMusic = Music::where('created_at', '>=', now()->subDays(30))->get();
+
+        $albumUploads = $recentMusic->groupBy(fn($music) => $music->created_at->toDateString())
+            ->map(fn($group) => $group->count())
+            ->sortKeys()
+            ->toArray();
+
+        // Top earning artists (from stats, grouped by user)
+        $topArtists = Stat::with('user:id,artist_name')
+            ->get()
+            ->groupBy('user_id')
+            ->map(function ($stats) {
+                return [
+                    'user' => $stats->first()->user,
+                    'total_earnings' => $stats->sum('earnings'),
+                ];
+            })
+            ->sortByDesc('total_earnings')
+            ->take(5)
+            ->values();
+
+        // Most streamed music (from stats, grouped by music)
+        $mostStreamed = Stat::with('music.artist')
+            ->get()
+            ->groupBy('music_id')
+            ->map(function ($stats) {
+                return [
+                    'music' => $stats->first()->music,
+                    'total_streams' => $stats->sum('streams'),
+                ];
+            })
+            ->sortByDesc('total_streams')
+            ->take(5)
+            ->values();
+
+        // Recent uploads
+        $recentUploads = Music::with('artist')->latest()->take(5)->get();
+
+        return view('admin.dashboard', compact(
+            'totalUsers',
+            'newSignups',
+            'totalReleases',
+            'pendingApprovals',
+            'totalRevenue',
+            'openTickets',
+            'albumUploads',
+            'topArtists',
+            'mostStreamed',
+            'recentUploads'
+        ));
     }
 
-    public function users()
+    public function labels()
     {
-        $users = User::all();
-        return view('admin.users', compact('users'));
+        $todayDate = date('Y-m-d');
+        $last7DaysDate = date('Y-m-d', strtotime('-7 days'));
+
+        $todaySignups = User::whereDate('created_at', $todayDate)->get();
+
+        $last7DaysSignups = User::whereDate('created_at', '>=', $last7DaysDate)->get();
+
+        $activeUsers = User::where('is_active', true)->get();
+
+        $allLabels = User::orderBy('created_at', 'desc')->paginate(20);
+
+        return view('admin.users.labels', compact(
+            'todaySignups',
+            'last7DaysSignups',
+            'activeUsers',
+            'allLabels'
+        ));
     }
 
-    public function songs()
+    
+
+    public function artists()
     {
-        $songs = Music::latest()->get();
-        return view('admin.uploads', compact('songs'));
+        $artists = Artist::with('label')->orderBy('created_at', 'desc')->paginate(20);
+
+        return view('admin.users.artist', compact('artists'));
     }
 
-    public function approveSong($id)
+
+    public function approveMusic($id)
     {
-        $song = Music::findOrFail($id);
-        $song->status = 'approved';
-        $song->save();
-        return redirect()->back()->with('success', 'Song approved.');
+        $music = Music::findOrFail($id);
+        $music->status = 'approved';
+        $music->save();
+        return redirect()->back()->with('success', 'Music approved.');
     }
 
-    public function rejectSong($id)
+    public function rejectMusic($id)
     {
-        $song = Music::findOrFail($id);
-        $song->status = 'rejected';
-        $song->save();
-        return redirect()->back()->with('error', 'Song rejected.');
+        $music = Music::findOrFail($id);
+        $music->status = 'rejected';
+        $music->save();
+        return redirect()->back()->with('error', 'Music rejected.');
     }
     public function updateEarnings(Request $request, $userId)
     {

@@ -14,8 +14,12 @@ class Music extends Model
         'release_date',
         'cover_path',
         'audio_path',
-        'status'
+        'status',
+        'isrc',
+        'upc',
+        'credits',
     ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

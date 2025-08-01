@@ -3,16 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Artist extends Model
 {
-    public function user()
+    public function label()
     {
         return $this->belongsTo(User::class);
     }
     public function music()
     {
         return $this->hasMany(Music::class);
+    }
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     protected $fillable = [

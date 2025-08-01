@@ -1,47 +1,64 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+@extends('layouts.app')
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
-
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+@section('content')
+<div class="min-h-screen flex">
+    <!-- Left Panel with Image -->
+    <div class="w-1/2 hidden md:flex flex-col justify-end items-center bg-gradient-to-t from-purple-700 to-blue-800 relative">
+        <img src="{{ asset('images/dave-east.jpg') }}" alt="Artist" class="absolute inset-0 h-full w-full object-cover opacity-90">
+        <div class="relative z-10 text-white p-8 text-center">
+            <h3 class="text-lg font-semibold">Dave East</h3>
+            <p class="text-sm mb-4">Distributed by Too Lost</p>
+            <div class="flex justify-center space-x-4">
+                <img src="{{ asset('images/spotify-icon.svg') }}" alt="Spotify" class="h-6 w-6">
+                <img src="{{ asset('images/apple-icon.svg') }}" alt="Apple Music" class="h-6 w-6">
+            </div>
         </div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+    </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+    <!-- Right Panel (Form) -->
+    <div class="w-full md:w-1/2 flex items-center justify-center bg-white px-6 py-12">
+        <div class="max-w-md w-full">
+            <h2 class="text-2xl font-bold mb-6">Sign in to MusicVerse</h2>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+            <form method="POST" action="{{ route('login') }}" class="space-y-4">
+                @csrf
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                <input type="email" name="email" placeholder="Type in your email" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+
+                <div class="relative">
+                    <input type="password" name="password" placeholder="Type in your password" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <!-- Optional: password visibility toggle here -->
+                </div>
+
+                <div class="text-sm text-gray-600">
+                    <a href="{{ route('password.request') }}" class="hover:underline font-semibold">Recover your account</a>
+                </div>
+
+                <button type="submit"
+                    class="w-full py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition">
+                    Sign in
+                </button>
+            </form>
+
+            <!-- Social Logins -->
+            <div class="mt-4 space-y-3">
+                <button class="w-full py-3 border border-gray-300 rounded-lg flex items-center justify-center gap-2">
+                    <img src="{{ asset('images/google-icon.svg') }}" class="h-5 w-5" alt="Google"> Sign in with Google
+                </button>
+
+                <button class="w-full py-3 border border-gray-300 rounded-lg flex items-center justify-center gap-2">
+                    <img src="{{ asset('images/apple-icon.svg') }}" class="h-5 w-5" alt="Apple"> Sign in with Apple
+                </button>
+            </div>
+
+            <p class="mt-6 text-sm text-center text-gray-600">
+                Don’t have an account?
+                <a href="{{ route('register') }}" class="text-purple-600 font-semibold hover:underline">Register now</a>
+            </p>
         </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800" name="remember">
-                <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+    </div>
+</div>
+@endsection
