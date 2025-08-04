@@ -22,46 +22,69 @@
             <h2 class="text-2xl font-bold mb-6">Create your MusicVerse account</h2>
 
             <form method="POST" action="{{ route('register') }}" class="space-y-5">
-                @csrf
+    @csrf
 
-                <!-- Name -->
-                <input id="name" name="name" type="text" value="{{ old('name') }}" required autofocus
-                    placeholder="Your name"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                @error('name')
-                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
-                @enderror
+    <!-- Name -->
+    <input id="name" name="name" type="text" value="{{ old('name') }}" required autofocus
+        placeholder="Your name"
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+    @error('name')
+        <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+    @enderror
 
-                <!-- Email -->
-                <input id="email" name="email" type="email" value="{{ old('email') }}" required
-                    placeholder="Your email"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                @error('email')
-                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
-                @enderror
+    <!-- Email -->
+    <input id="email" name="email" type="email" value="{{ old('email') }}" required
+        placeholder="Your email"
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+    @error('email')
+        <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+    @enderror
 
-                <!-- Password -->
-                <input id="password" name="password" type="password" required
-                    placeholder="Password"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                @error('password')
-                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
-                @enderror
+    <!-- Password -->
+    <input id="password" name="password" type="password" required
+        placeholder="Password"
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+    @error('password')
+        <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+    @enderror
 
-                <!-- Confirm Password -->
-                <input id="password_confirmation" name="password_confirmation" type="password" required
-                    placeholder="Confirm password"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                @error('password_confirmation')
-                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
-                @enderror
+    <!-- Confirm Password -->
+    <input id="password_confirmation" name="password_confirmation" type="password" required
+        placeholder="Confirm password"
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+    @error('password_confirmation')
+        <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+    @enderror
 
-                <!-- Submit -->
-                <button type="submit"
-                    class="w-full py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition">
-                    Register
-                </button>
-            </form>
+    <!-- Role Selection -->
+    <select name="role" required
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+        <option value="" disabled selected>Select role</option>
+        <option value="artist" {{ old('role') == 'artist' ? 'selected' : '' }}>Artist</option>
+        <option value="label" {{ old('role') == 'label' ? 'selected' : '' }}>Label</option>
+    </select>
+    @error('role')
+        <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+    @enderror
+
+    <!-- Terms and Conditions -->
+    <div class="flex items-start space-x-2">
+        <input id="terms" name="terms" type="checkbox" required
+            class="mt-1">
+        <label for="terms" class="text-sm text-gray-700">
+            I agree to the <a href="/terms" target="_blank" class="text-purple-600 underline">Terms & Conditions</a>
+        </label>
+    </div>
+    @error('terms')
+        <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+    @enderror
+
+    <!-- Submit -->
+    <button type="submit"
+        class="w-full py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition">
+        Register
+    </button>
+</form>
 
             <!-- Link to Login -->
             <p class="mt-6 text-center text-sm text-gray-600">

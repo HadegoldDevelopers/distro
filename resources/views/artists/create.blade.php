@@ -1,5 +1,7 @@
 @extends('layouts.user')
 
+@section('title', 'Add New Artist')
+
 @section('content')
 <div class="max-w-3xl mx-auto p-6 bg-zinc-800 rounded-lg shadow-lg text-gray-300">
     <h1 class="text-2xl font-semibold mb-6">Add New Artist</h1>

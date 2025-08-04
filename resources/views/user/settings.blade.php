@@ -1,5 +1,6 @@
 @extends('layouts.user')
 
+@section('title', 'User Settings')
 @section('content')
 <div class="max-w-3xl mx-auto p-6 bg-zinc-900 rounded-lg shadow space-y-6 mt-8">
 

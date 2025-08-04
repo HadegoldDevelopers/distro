@@ -1,5 +1,7 @@
 @extends('layouts.user')
 
+@section('title', 'My Releases')
+
 @section('content')
 <div class="max-w-6xl mx-auto px-4 py-6">
   <h2 class="text-2xl font-bold text-white mb-6">My Releases</h2>

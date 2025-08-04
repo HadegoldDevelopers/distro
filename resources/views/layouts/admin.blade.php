@@ -1,31 +1,93 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Admin Panel')</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    
+    <title>@yield('title', 'Admin Panel')</title> 
+    <script src="//unpkg.com/alpinejs" defer></script>
+    @vite('resources/css/app.css')
+  </head>
+  <body
+    x-data="{ page: 'ecommerce', loaded: true, darkMode: false, stickyMenu: false, sidebarToggle: false, scrollTop: false }"
+    x-init="
+      darkMode = JSON.parse(localStorage.getItem('darkMode'));
+      $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))
+    "
+    :class="{'dark bg-gray-900': darkMode === true}"
+  >
+    <!-- ===== Preloader Start ===== -->
+    {{-- @include('partials.preloader') --}}
+    <!-- ===== Preloader End ===== -->
 
-<!-- Alpine.js for Dropdowns -->
-<script src="//unpkg.com/alpinejs" defer></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-    </style>
-</head>
-<body class="bg-gray-100 text-gray-800">
- @include('partials.admin.aside')
-    <div class="min-h-screen flex">
-      
-       
-        <!-- Main Content -->
-        <main class="flex-1 p-6 md:p-8 overflow-auto">
-        @include('partials.flash-messages')
+    <!-- ===== Page Wrapper Start ===== -->
+    <div class="flex h-screen overflow-hidden">
+      <!-- ===== Sidebar Start ===== -->
+      @include('partials.admin.aside')
+      <!-- ===== Sidebar End ===== -->
 
-            @yield('content')
+      <!-- ===== Content Area Start ===== -->
+      <div
+        class="relative flex flex-col flex-1 overflow-x-hidden overflow-y-auto"
+      >
+        <!-- Small Device Overlay Start -->
+        {{-- @include('partials.overlay') --}}
+        <!-- Small Device Overlay End -->
+
+        <!-- ===== Header Start ===== -->
+        {{-- @include('partials.header') --}}
+        <!-- ===== Header End ===== -->
+
+        <!-- ===== Main Content Start ===== -->
+        <main>
+          <div class="p-4 mx-auto md:p-6 max-w-full xl:max-w-7xl">
+            <div class="flex flex-col xl:flex-row gap-6">
+  <div class="flex-grow">
+                <!-- Metric Group One -->
+                {{-- @include('partials.metric-group.metric-group-01') --}}
+                <!-- Metric Group One -->
+
+                @yield('content')
+
+                <!-- ====== Chart One Start -->
+                {{-- @include('partials.chart.chart-01') --}}
+                <!-- ====== Chart One End -->
+              </div>
+
+              <div class="col-span-12 xl:col-span-5">
+                <!-- ====== Chart Two Start -->
+                {{-- @include('partials.chart.chart-02') --}}
+                <!-- ====== Chart Two End -->
+              </div>
+
+              <div class="col-span-12">
+                <!-- ====== Chart Three Start -->
+                {{-- @include('partials.chart.chart-03') --}}
+                <!-- ====== Chart Three End -->
+              </div>
+
+              <div class="col-span-12 xl:col-span-5">
+                <!-- ====== Map One Start -->
+                {{-- @include('partials.map-01') --}}
+                <!-- ====== Map One End -->
+              </div>
+
+              <div class="col-span-12 xl:col-span-7">
+                <!-- ====== Table One Start -->
+                {{-- @include('partials.table.table-01') --}}
+                <!-- ====== Table One End -->
+              </div>
+            </div>
+          </div>
         </main>
+        <!-- ===== Main Content End ===== -->
+      </div>
+      <!-- ===== Content Area End ===== -->
     </div>
-
-</body>
+    <!-- ===== Page Wrapper End ===== -->
+  </body>
 </html>

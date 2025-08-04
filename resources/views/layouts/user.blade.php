@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Your Distro - Dashboard</title>
-
+  <title>@yield('title') | {{ $global['site_title']}}</title>
+<meta name="description" content="{{ $global['meta_description'] }}">
+<meta name="keywords" content="{{ $global['meta_keywords'] }}">
+  
+<link rel="icon" href="{{ asset('storage/' . $global['favicon']) }}" type="image/x-icon">
   <!-- Tailwind CSS & Vite -->
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 

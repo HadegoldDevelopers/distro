@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Stat;
 use App\Models\Music;
 use App\Models\User;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -17,6 +18,7 @@ class UserController extends Controller
     public function userDashboard()
     {
         $user = Auth::user();
+        $siteTitle = Setting::getValue('site_title', 'Default Site Title');
         $totalArtists = $user->artists()->count();
 
         $last30Days = now()->subDays(30);
@@ -64,6 +66,7 @@ class UserController extends Controller
 
         return view('dashboard', [
             'user' => $user,
+            'siteTitle' => $siteTitle,
             'submittedSongs' => $submittedSongs,
             'approvedSongs' => $approvedSongs,
             'musics' => $musics,

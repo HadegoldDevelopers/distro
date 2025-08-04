@@ -1,5 +1,7 @@
 @extends('layouts.user')
 
+@section('title', 'Artists')
+
 @section('content')
 <div class="max-w-6xl mx-auto p-6">
     <div class="flex justify-between items-center mb-6">

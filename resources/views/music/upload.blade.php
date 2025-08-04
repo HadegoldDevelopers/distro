@@ -1,5 +1,7 @@
 @extends('layouts.user')
 
+@section('title', 'Upload Music')
+
 @section('content')
   <div class="max-w-4xl mx-auto bg-zinc-900 text-white p-8 rounded-lg shadow-xl mt-12">
     <h2 class="text-2xl font-bold text-orange-500 mb-6 flex items-center">

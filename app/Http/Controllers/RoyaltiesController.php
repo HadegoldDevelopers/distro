@@ -13,9 +13,30 @@ class RoyaltiesController extends Controller
 
     
     // Show upload form (optional)
-    public function reports()
+    public function reports(Request $request)
     {
-        return view('admin.royalties.index');
+        $query = Stat::query();
+
+        // Optional filters
+        switch ($request->input('range')) {
+            case 'today':
+                $query->whereDate('created_at', today());
+                break;
+            case 'month':
+                $query->whereMonth('created_at', now()->month);
+                break;
+        }
+
+        $stats = [
+            'total_earnings' => $query->sum('earnings'),
+            'total_streams'  => $query->sum('streams'),
+            'artist_payout'  => $query->whereHas('user', fn($q) => $q->where('role', 'artist'))->sum('earnings'),
+            'label_payout'   => $query->whereHas('user', fn($q) => $q->where('role', 'label'))->sum('earnings'),
+            'track_count'    => $query->distinct('music_id')->count('music_id'),
+            'countries'      => $query->distinct('country')->count('country'),
+        ];
+
+       return view('admin.royalties.index', compact('stats'));
     }
 
     public function royaltiesReport()

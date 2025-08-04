@@ -21,6 +21,7 @@ use App\Http\Controllers\SubscriptionPlanController;
 
 // Public Home Page
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::view('/terms', 'terms')->name('terms');
 
 // Admin Login Routes
 Route::get('/admin/login', [AdminController::class, 'showLoginForm'])->name('admin.login');
@@ -31,6 +32,8 @@ Route::prefix('admin')->middleware(['auth:admin'])->name('admin.')->group(functi
 
     // Dashboard
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    // Logout
+    Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
     Route::post('/approve/{id}', [AdminController::class, 'approveMusic'])->name('approve.music');
     Route::post('/reject/{id}', [AdminController::class, 'rejectMusic'])->name('reject.music');
 
@@ -123,14 +126,19 @@ Route::prefix('royalties')->name('royalties.')->group(function () {
     // Settings
     Route::prefix('settings')->name('settings.')->group(function () {
         Route::get('/general', [SettingsController::class, 'general'])->name('general');           // admin.settings.general
-        Route::get('/payment', [SettingsController::class, 'paymentGateway'])->name('payment');   // admin.settings.payment
+        Route::post('/general', [SettingsController::class, 'updateGeneral'])->name('update');
+
+        // Route::get('/payment', [SettingsController::class, 'paymentGateway'])->name('payment');   // admin.settings.payment
+        Route::get('/payment', [App\Http\Controllers\Admin\PaymentGatewayController::class, 'edit'])->name('payment');
+        Route::put('payment-gateways/update', [App\Http\Controllers\Admin\PaymentGatewayController::class, 'update'])->name('payment-gateways.update');
+
         Route::get('/integrations', [SettingsController::class, 'integrations'])->name('integrations'); // admin.settings.integrations
         Route::get('/security', [SettingsController::class, 'security'])->name('security');       // admin.settings.security
         Route::get('/site_content', [SettingsController::class, 'siteContent'])->name('site_content'); // admin.settings.site_content
     });
 
-    // Logout
-    Route::post('/admin/logout', [AdminController::class, 'logout'])->name('logout');});
+   
+});
 
 // Normal User Dashboard
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -160,10 +168,14 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/artists/{artist}', [ArtistController::class, 'update'])->name('artists.update');
 });
 
-// Payment Routes
-Route::get('/payment', [PaymentController::class, 'index'])->name('payment.index');
-Route::post('/payment/process', [PaymentController::class, 'process'])->name('payment.process');
-Route::post('/withdrawal/save', [PaymentController::class, 'saveWithdrawal'])->name('withdrawal.save');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/payment', [PaymentController::class, 'index'])->name('payment.index');
+    Route::post('/payment/process', [PaymentController::class, 'process'])->name('payment.process');
+    Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
+    Route::get('/payment/callback/{gateway}', [PaymentController::class, 'handleCallback'])->name('payment.callback');
 
+    Route::post('/withdrawal/save', [PaymentController::class, 'saveWithdrawal'])->name('withdrawal.save');
+    Route::post('/subscription/upgrade', [PaymentController::class, 'upgrade'])->name('subscription.upgrade');
+});
 // Auth scaffolding (Laravel Breeze / Jetstream / Fortify etc.)
 require __DIR__ . '/auth.php';

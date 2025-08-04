@@ -1,5 +1,7 @@
 @extends('layouts.user')
 
+@section('title', 'Profile Settings')
+
 @section('content')
 <div class="max-w-4xl mx-auto p-6 text-gray-100">
     <h2 class="text-3xl font-bold mb-6">Profile Settings</h2>

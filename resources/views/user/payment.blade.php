@@ -1,39 +1,64 @@
 @extends('layouts.user')
-
+@section('title', 'Payments')
 @section('content')
 <div class="max-w-6xl mx-auto py-10 px-6 grid md:grid-cols-2 gap-8">
-  {{-- Deposit Section --}}
+
+  {{-- Current Subscription Plan --}}
+  <div class="mb-10 p-6 bg-zinc-900 rounded border border-zinc-700 col-span-2">
+    <h2 class="text-3xl font-bold text-white mb-3">Your Current Subscription</h2>
+
+    @if($currentPlan)
+      <p class="text-orange-500 font-semibold text-lg">{{ ucfirst($currentPlan->role) }} Plan</p>
+      <p class="text-white text-xl font-bold">${{ number_format($currentPlan->price, 2) }} / {{ ucfirst($currentPlan->billing_cycle) }}</p>
+      <p class="text-zinc-400 mt-2">{{ $currentPlan->description }}</p>
+    @else
+      <p class="text-zinc-400">You currently have no subscription plan.</p>
+    @endif
+  </div>
+
+  {{-- Upgrade Promotion --}}
+  @if($upgradePlan)
+  <div class="mb-10 p-6 bg-orange-700 bg-opacity-20 rounded border border-orange-500 col-span-2">
+    <h3 class="text-2xl font-bold text-white mb-4">Upgrade to Label Plan</h3>
+    <p class="text-white mb-4">
+      Unlock advanced promotional tools, better exposure, and exclusive opportunities by upgrading to the Label Plan. Grow your audience faster and maximize your earnings!
+    </p>
+    <p class="text-orange-400 font-semibold mb-4">${{ number_format($upgradePlan->price, 2) }} / {{ ucfirst($upgradePlan->billing_cycle) }}</p>
+
+    <form method="POST" action="{{ route('subscription.upgrade') }}">
+      @csrf
+      <input type="hidden" name="new_plan_id" value="{{ $upgradePlan->id }}">
+      <button type="submit" class="bg-orange-600 hover:bg-orange-700 text-white py-3 px-6 rounded font-semibold">
+        Upgrade Now
+      </button>
+    </form>
+  </div>
+  @endif
+
+  {{-- Payment Methods --}}
   <div>
     <h2 class="text-2xl font-bold text-white mb-6">Choose Your Payment Method</h2>
 
     <form method="POST" action="{{ route('payment.process') }}" class="space-y-6">
       @csrf
 
+      {{-- Hidden subscription plan input: default to upgradePlan or currentPlan --}}
+      <input type="hidden" name="subscription_plan_id" value="{{ $upgradePlan->id ?? ($currentPlan->id ?? '') }}">
+
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <label class="flex items-center p-4 bg-zinc-800 rounded cursor-pointer hover:bg-zinc-700">
-          <input type="radio" name="payment_method" value="paystack" class="mr-4">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/6/61/Paystack_Logo.png" class="w-24" />
-        </label>
-
-        <label class="flex items-center p-4 bg-zinc-800 rounded cursor-pointer hover:bg-zinc-700">
-          <input type="radio" name="payment_method" value="flutterwave" class="mr-4">
-          <img src="https://flutterwave.com/images/logo-colored.svg" class="w-24" />
-        </label>
-
-        <label class="flex items-center p-4 bg-zinc-800 rounded cursor-pointer hover:bg-zinc-700">
-          <input type="radio" name="payment_method" value="stripe" class="mr-4">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Stripe_Logo%2C_revised_2016.svg" class="w-24" />
-        </label>
-
-        <label class="flex items-center p-4 bg-zinc-800 rounded cursor-pointer hover:bg-zinc-700">
-          <input type="radio" name="payment_method" value="paypal" class="mr-4">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" class="w-24" />
-        </label>
-
-        <label class="flex items-center p-4 bg-zinc-800 rounded cursor-pointer hover:bg-zinc-700 col-span-2">
-          <input type="radio" name="payment_method" value="bank" class="mr-4">
-          <span class="text-white font-semibold">Bank Transfer (Manual)</span>
-        </label>
+        @foreach ($paymentMethods as $method => $label)
+          <label class="flex items-center p-4 bg-zinc-800 rounded cursor-pointer hover:bg-zinc-700">
+            <input 
+              type="radio" 
+              name="payment_method" 
+              value="{{ $method }}" 
+              class="mr-4" 
+              required
+              {{ old('payment_method') === $method || (!$loop->index && !old('payment_method')) ? 'checked' : '' }}
+            >
+            <span class="text-white font-semibold">{{ $label }}</span>
+          </label>
+        @endforeach
       </div>
 
       <button type="submit"
@@ -74,7 +99,6 @@
 
       {{-- Crypto --}}
       <div x-show="method === 'crypto'" class="space-y-4" x-cloak>
-        <!-- Wallet Address Input -->
         <input 
             type="text" 
             name="crypto_wallet" 
@@ -84,26 +108,23 @@
             class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 text-white rounded"
         >
     
-        <!-- Crypto Type Dropdown -->
         <select 
             name="crypto_type" 
             id="crypto_type" 
             required
             class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 text-white rounded"
         >
-            <option disabled {{ old('crypto_type', $user->crypto_type) ? '' : 'selected' }}>Select Crypto Type</option>
-            <option value="btc" @if(old('crypto_type', $user->crypto_type) == 'btc') selected @endif>Bitcoin (BTC)</option>
-            <option value="eth" @if(old('crypto_type', $user->crypto_type) == 'eth') selected @endif>Ethereum (ETH)</option>
-            <option value="usdt" @if(old('crypto_type', $user->crypto_type) == 'usdt') selected @endif>USDT</option>
+            <option disabled {{ old('crypto_type', Auth::user()->crypto_type) ? '' : 'selected' }}>Select Crypto Type</option>
+            <option value="btc" @if(old('crypto_type', Auth::user()->crypto_type) == 'btc') selected @endif>Bitcoin (BTC)</option>
+            <option value="eth" @if(old('crypto_type', Auth::user()->crypto_type) == 'eth') selected @endif>Ethereum (ETH)</option>
+            <option value="usdt" @if(old('crypto_type', Auth::user()->crypto_type) == 'usdt') selected @endif>USDT</option>
         </select>
-    </div>
-    <button type="submit"
+      </div>
+
+      <button type="submit"
         class="bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded font-medium transition">
         Save Payment Info
       </button>
-      </div>
-
-      
     </form>
   </div>
 </div>
